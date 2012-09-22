@@ -1,0 +1,85 @@
+<html>
+    <head>
+        <title>Screen capture queue</title>
+        <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+    <h1>Urls to download</h1>
+    <table>
+    <tr>
+        <th>Id</th>
+        <th>Url</th>
+        <th>Resolution</th>
+        <th>Extension</th>
+        <th>Proxy</th>
+        <th>XPath</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+
+
+
+[% FOR row IN rows %]
+    <tr>
+        <td>[% row.id_text %]</td>
+        <td><a href="$row->{url}">$row->{url}</a></td>
+        <td>$row->{size}</td>
+        <td>$row->{type}</td>
+        <td>$row->{proxy}</td>
+        <td>$row->{xpath}</td>
+        <td>$status_text</a></td>
+        <td><a href="/delete?id=$row->{id}">Delete</a></td>
+    </tr>
+[% END %]
+
+    </table>
+
+    <hr/>
+
+    <form action="/add">
+    <table>
+        <tr>
+            <th>Url:</th>
+            <td>
+                <input type="text" name="url" value="$url" size="80"/>
+            </td>
+        </tr>
+
+        <tr>
+            <th>Size:</th>
+            <td>
+                <input type="text" name="size" value="$size" size="10"/> (ex: 1280x800)
+            </td>
+        </tr>
+
+        <tr>
+            <th>Type:</th>
+            <td>
+                <input type="radio" name="type" id="png" value="png" checked/> <label for="png">PNG</label> &nbsp; &nbsp;
+                <input type="radio" name="type" id="pdf" value="pdf"/> <label for="pdf">PDF</label>
+            </td>
+        </tr>
+
+        <tr>
+            <th>Proxy:</th>
+            <td>
+                <input type="text" name="proxy" value="$proxy" size="80"/>
+            </td>
+        </tr>
+
+        <tr>
+            <th>XPath:</th>
+            <td>
+                <input type="text" name="xpath" value="$xpath" size="80"/>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="2"><input type="submit" value="Add"/>
+        </tr>
+    </table>
+    </form>
+
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    </body>
+</html>

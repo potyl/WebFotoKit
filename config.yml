@@ -1,0 +1,12 @@
+logger: 'console'
+template: 'template_toolkit'
+
+engines:
+    template_toolkit:
+        encoding:  'utf8'
+        start_tag: '[%'
+        stop_tag: '%]'
+        extension: 'html'
+#        INCLUDE_PATH: 'templates'
+
+#views: templates

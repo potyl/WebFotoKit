@@ -8,9 +8,15 @@ use Dancer;
 use DBI;
 use FindBin;
 use File::Spec::Functions qw(catdir);
+use Cwd 'abs_path';
 
-set logger => 'console';
-set public => catdir($FindBin::Bin, '..', 'static');
+set appdir => abs_path(catdir($FindBin::Bin, '..'));
+chdir setting('appdir');
+
+print setting("appdir"), "\n";
+#set logger   => 'console';
+#set public   => catdir($FindBin::Bin, '..', 'static');
+#set template => 'template_toolkit';
 
 
 my $dbh = DBI->connect('dbi:SQLite:dbname=queue.db', '', '');
@@ -37,103 +43,27 @@ get '/' => sub {
     my $select = $dbh->prepare("SELECT * FROM queue");
     $select->execute();
 
-    my $out = qq{
-        <html>
-            <head>
-                <title>Screen capture queue</title>
-                <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
-            </head>
-            <body>
-            <h1>Urls to download</h1>
-            <table>
-            <tr>
-                <th>Id</th>
-                <th>Url</th>
-                <th>Resolution</th>
-                <th>Extension</th>
-                <th>Proxy</th>
-                <th>XPath</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-    };
+    my @rows;
     while (my $row = $select->fetchrow_hashref) {
-        my $id_text = $row->{id};
-        $id_text = "<b>*</b> $id_text" if $row->{id} == $id;
         my $status_text = $row->{status};
         if ($status_text eq 'done') {
             $status_text = qq{<a href="view?id=$row->{id}">$status_text</a>};
         }
+        $row->{status_text} = $status_text;
 
-        $out .= qq{
-            <tr>
-                <td>$id_text</td>
-                <td><a href="$row->{url}">$row->{url}</a></td>
-                <td>$row->{size}</td>
-                <td>$row->{type}</td>
-                <td>$row->{proxy}</td>
-                <td>$row->{xpath}</td>
-                <td>$status_text</a></td>
-                <td><a href="/delete?id=$row->{id}">Delete</a></td>
-            </tr>
-        };
+        push @rows, $row;
     }
 
-    $out .= qq{
-            </table>
-
-            <hr/>
-
-            <form action="/add">
-            <table>
-                <tr>
-                    <th>Url:</th>
-                    <td>
-                        <input type="text" name="url" value="$url" size="80"/>
-                    </td>
-                </tr>
-
-                <tr>
-                    <th>Size:</th>
-                    <td>
-                        <input type="text" name="size" value="$size" size="10"/> (ex: 1280x800)
-                    </td>
-                </tr>
-
-                <tr>
-                    <th>Type:</th>
-                    <td>
-                        <input type="radio" name="type" id="png" value="png" checked/> <label for="png">PNG</label> &nbsp; &nbsp;
-                        <input type="radio" name="type" id="pdf" value="pdf"/> <label for="pdf">PDF</label>
-                    </td>
-                </tr>
-
-                <tr>
-                    <th>Proxy:</th>
-                    <td>
-                        <input type="text" name="proxy" value="$proxy" size="80"/>
-                    </td>
-                </tr>
-
-                <tr>
-                    <th>XPath:</th>
-                    <td>
-                        <input type="text" name="xpath" value="$xpath" size="80"/>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td colspan="2"><input type="submit" value="Add"/>
-                </tr>
-            </table>
-            </form>
-
-            <script src="bootstrap/js/bootstrap.min.js"></script>
-            </body>
-        </html>
+    my $data = {
+        rows  => \@rows,
+        url   => $url,
+        id    => $id,
+        size  => $size,
+        proxy => $proxy,
+        xpath => $xpath,
     };
 
-    return $out;
+    return template 'index.html', $data;
 };
 
 
