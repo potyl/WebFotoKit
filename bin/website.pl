@@ -46,10 +46,6 @@ get '/' => sub {
     my @rows;
     while (my $row = $select->fetchrow_hashref) {
         my $status_text = $row->{status};
-        if ($status_text eq 'done') {
-            $status_text = qq{<a href="view?id=$row->{id}">$status_text</a>};
-        }
-        $row->{status_text} = $status_text;
 
         push @rows, $row;
     }

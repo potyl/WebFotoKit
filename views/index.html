@@ -21,14 +21,20 @@
 
 [% FOR row IN rows %]
     <tr>
-        <td>[% row.id_text %]</td>
-        <td><a href="$row->{url}">$row->{url}</a></td>
-        <td>$row->{size}</td>
-        <td>$row->{type}</td>
-        <td>$row->{proxy}</td>
-        <td>$row->{xpath}</td>
-        <td>$status_text</a></td>
-        <td><a href="/delete?id=$row->{id}">Delete</a></td>
+        <td>[% row.id %]</td>
+        <td><a href="[% row.url %]">[% row.url %]</a></td>
+        <td>[% row.size %]</td>
+        <td>[% row.type %]</td>
+        <td>[% row.proxy %]</td>
+        <td>[% row.xpath %]</td>
+        <td>
+            [% IF row.status == 'done' %]
+                <a href="view?id=[% row.id %]">[% row.status %]</a>
+            [% ELSE %]
+                [% row.status %]
+            [% END %]
+        </td>
+        <td><a href="/delete?id=[% row.id %]">Delete</a></td>
     </tr>
 [% END %]
 

@@ -9,4 +9,5 @@ engines:
         extension: 'html'
 #        INCLUDE_PATH: 'templates'
 
+public: 'static'
 #views: templates
