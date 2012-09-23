@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
     <head>
         <title>Screen capture queue</title>
         <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -43,48 +44,42 @@
     <hr/>
 
     <form action="/add">
-    <table>
-        <tr>
-            <th>Url:</th>
-            <td>
-                <input type="text" name="url" value="[% url %]" size="80"/>
-            </td>
-        </tr>
+    <div class="row">
+        <div class="span1">Url:</div>
+        <div class="span11"><input type="text" name="url" value="[% url %]" size="80"/></div>
+    </div>
 
-        <tr>
-            <th>Size:</th>
-            <td>
-                <input type="text" name="size" value="[% size %]" size="10"/> (ex: 1280x800)
-            </td>
-        </tr>
+    <div class="row">
+        <div class="span1">Size:</div>
+        <div class="span11"><input type="text" name="size" value="[% size %]" size="80"/></div>
+    </div>
 
-        <tr>
-            <th>Type:</th>
-            <td>
-                <input type="radio" name="type" id="png" value="png" [% IF type == 'png' OR type == '' %]checked[% END %]/> <label for="png">PNG</label> &nbsp; &nbsp;
-                <input type="radio" name="type" id="pdf" value="pdf"[% IF type == 'pdf' %]checked[% END %]/> <label for="pdf">PDF</label>
-            </td>
-        </tr>
+    <div class="row">
+        <div class="span1">Type:</div>
+        <div class="span1">
+            <label class="radio"><input type="radio" name="type" id="png" value="png" [% IF type == 'png' OR type == '' %]checked[% END %]/> PNG</label>
+        </div>
 
-        <tr>
-            <th>Proxy:</th>
-            <td>
-                <input type="text" name="proxy" value="[% proxy %]" size="80"/>
-            </td>
-        </tr>
+        <div class="span1">
+            <label class="radio"><input type="radio" name="type" id="pdf" value="pdf"[% IF type == 'pdf' %]checked[% END %]/> PDF</label>
+        </div>
+    </div>
 
-        <tr>
-            <th>XPath:</th>
-            <td>
-                <input type="text" name="xpath" value="[% xpath %]" size="80"/>
-            </td>
-        </tr>
+    <div class="row">
+        <div class="span1">Proxy:</div>
+        <div class="span11"><input type="text" name="proxy" value="[% proxy %]" size="80"/></div>
+    </div>
 
-        <tr>
-            <td colspan="2"><input type="submit" value="Add"/>
-        </tr>
-    </table>
+    <div class="row">
+        <div class="span1">XPath:</div>
+        <div class="span11"><input type="text" name="xpath" value="[% xpath %]" size="80"/></div>
+    </div>
+
+    <div class="row">
+        <div class="offset2 span10"><input type="submit" value="Add"/></div>
+    </div>
     </form>
+
 
     <script src="bootstrap/js/bootstrap.min.js"></script>
     </body>
