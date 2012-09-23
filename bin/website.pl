@@ -10,13 +10,9 @@ use FindBin;
 use File::Spec::Functions qw(catdir);
 use Cwd 'abs_path';
 
-set appdir => abs_path(catdir($FindBin::Bin, '..'));
-chdir setting('appdir');
-
-print setting("appdir"), "\n";
-#set logger   => 'console';
-#set public   => catdir($FindBin::Bin, '..', 'static');
-#set template => 'template_toolkit';
+my $APP_DIR = abs_path(catdir($FindBin::Bin, '..'));
+set appdir => $APP_DIR;
+chdir $APP_DIR;
 
 
 my $dbh = DBI->connect('dbi:SQLite:dbname=queue.db', '', '');
