@@ -43,42 +43,57 @@
 
     </table>
 
-    <hr/>
-
-    <form action="/add">
-    <div class="row">
-        <div class="span1">Url:</div>
-        <div class="span11"><input type="text" name="url" value="[% url %]" size="80"/></div>
-    </div>
-
-    <div class="row">
-        <div class="span1">Size:</div>
-        <div class="span11"><input type="text" name="size" value="[% size %]" size="80"/></div>
-    </div>
-
-    <div class="row">
-        <div class="span1">Type:</div>
-        <div class="span1">
-            <label class="radio"><input type="radio" name="type" id="png" value="png" [% IF type == 'png' OR type == '' %]checked[% END %]/> PNG</label>
+    <legend>Add an URL</legend>
+    <form class="form-horizontal" action="/add">
+    <div class="control-group">
+        <div class="control-label">
+            <label class="control-label" for="url">Url</label>
         </div>
-
-        <div class="span1">
-            <label class="radio"><input type="radio" name="type" id="pdf" value="pdf"[% IF type == 'pdf' %]checked[% END %]/> PDF</label>
+        <div class="controls">
+            <input class="input-xxlarge" type="text" id="url" name="url" value="[% url %]"/>
         </div>
     </div>
 
-    <div class="row">
-        <div class="span1">Proxy:</div>
-        <div class="span11"><input type="text" name="proxy" value="[% proxy %]" size="80"/></div>
+
+    <div class="control-group">
+        <div class="control-label">
+            <label class="control-label" for="size">Size</label>
+        </div>
+        <div class="controls">
+            <input class="input-small" type="text" id="size" name="size" value="[% size %]"/>
+            &nbsp;
+
+            <label class="radio inline"><input type="radio" name="type" id="png" value="png" [% IF type == 'png' OR type == '' %]checked[% END %]/> PNG</label>
+            &nbsp;
+
+            <label class="radio inline"><input type="radio" name="type" id="pdf" value="pdf"[% IF type == 'pdf' %]checked[% END %]/> PDF</label>
+        </div>
     </div>
 
-    <div class="row">
-        <div class="span1">XPath:</div>
-        <div class="span11"><input type="text" name="xpath" value="[% xpath %]" size="80"/></div>
+
+    <div class="control-group">
+        <div class="control-label">
+            <label class="control-label" for="proxy">Proxy</label>
+        </div>
+        <div class="controls">
+            <input  class="input-xlarge" type="text" id="proxy" name="proxy" value="[% proxy %]"/>
+        </div>
     </div>
 
-    <div class="row">
-        <div class="offset2 span10"><input type="submit" value="Add"/></div>
+
+    <div class="control-group">
+        <div class="control-label">
+            <label class="control-label" for="xpath">XPath</label>
+        </div>
+        <div class="controls">
+            <input class="input-xlarge" type="text" id="xpath" name="xpath" value="[% xpath %]" placeholder="Xpath expression"/>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <div class="controls">
+            <input class="btn btn-primary" type="submit" value="Add"/>
+        </div>
     </div>
     </form>
 
