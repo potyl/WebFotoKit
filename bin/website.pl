@@ -35,6 +35,7 @@ get '/' => sub {
     my $size = param('size') // '1280x800';
     my $proxy = param('proxy') // '';
     my $xpath = param('xpath') // '';
+    my $type = param('type') // 'pdf';
 
     my $select = $dbh->prepare("SELECT * FROM queue");
     $select->execute();
@@ -50,6 +51,7 @@ get '/' => sub {
         rows  => \@rows,
         url   => $url,
         id    => $id,
+        type  => $type,
         size  => $size,
         proxy => $proxy,
         xpath => $xpath,

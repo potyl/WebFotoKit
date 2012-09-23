@@ -47,36 +47,36 @@
         <tr>
             <th>Url:</th>
             <td>
-                <input type="text" name="url" value="$url" size="80"/>
+                <input type="text" name="url" value="[% url %]" size="80"/>
             </td>
         </tr>
 
         <tr>
             <th>Size:</th>
             <td>
-                <input type="text" name="size" value="$size" size="10"/> (ex: 1280x800)
+                <input type="text" name="size" value="[% size %]" size="10"/> (ex: 1280x800)
             </td>
         </tr>
 
         <tr>
             <th>Type:</th>
             <td>
-                <input type="radio" name="type" id="png" value="png" checked/> <label for="png">PNG</label> &nbsp; &nbsp;
-                <input type="radio" name="type" id="pdf" value="pdf"/> <label for="pdf">PDF</label>
+                <input type="radio" name="type" id="png" value="png" [% IF type == 'png' OR type == '' %]checked[% END %]/> <label for="png">PNG</label> &nbsp; &nbsp;
+                <input type="radio" name="type" id="pdf" value="pdf"[% IF type == 'pdf' %]checked[% END %]/> <label for="pdf">PDF</label>
             </td>
         </tr>
 
         <tr>
             <th>Proxy:</th>
             <td>
-                <input type="text" name="proxy" value="$proxy" size="80"/>
+                <input type="text" name="proxy" value="[% proxy %]" size="80"/>
             </td>
         </tr>
 
         <tr>
             <th>XPath:</th>
             <td>
-                <input type="text" name="xpath" value="$xpath" size="80"/>
+                <input type="text" name="xpath" value="[% xpath %]" size="80"/>
             </td>
         </tr>
 
