@@ -25,20 +25,20 @@
 
 [% FOR row IN rows %]
     <tr>
-        <td>[% row.id %]</td>
-        <td><a href="[% row.url %]">[% row.url %]</a></td>
-        <td>[% row.size %]</td>
-        <td>[% row.type %]</td>
-        <td>[% row.proxy %]</td>
-        <td>[% row.xpath %]</td>
+        <td>[% row.id | html %]</td>
+        <td><a href="[% row.url | uri %]">[% row.url | html %]</a></td>
+        <td>[% row.size | html %]</td>
+        <td>[% row.type | html %]</td>
+        <td>[% row.proxy | html %]</td>
+        <td>[% IF row.xpath %]<code>[% row.xpath | html %]</code>[% END %]</td>
         <td>
             [% IF row.status == 'done' %]
-                <a href="view?id=[% row.id %]">[% row.status %]</a>
+                <a href="view?id=[% row.id | html %]">[% row.status | html %]</a>
             [% ELSE %]
-                [% row.status %]
+                [% row.status | html %]
             [% END %]
         </td>
-        <td><a href="/delete?id=[% row.id %]">Delete</a></td>
+        <td><a href="/delete?id=[% row.id | html %]">Delete</a></td>
     </tr>
 [% END %]
 
@@ -51,7 +51,7 @@
             <label class="control-label" for="url">Url</label>
         </div>
         <div class="controls">
-            <input class="input-xxlarge" type="text" id="url" name="url" value="[% url %]"/>
+            <input class="input-xxlarge" type="text" id="url" name="url" value="[% url | html %]"/>
         </div>
     </div>
 
@@ -61,7 +61,7 @@
             <label class="control-label" for="size">Size</label>
         </div>
         <div class="controls">
-            <input class="input-small" type="text" id="size" name="size" value="[% size %]"/>
+            <input class="input-small" type="text" id="size" name="size" value="[% size | html %]"/>
             &nbsp;
 
             <label class="radio inline"><input type="radio" name="type" id="png" value="png" [% IF type == 'png' OR type == '' %]checked[% END %]/> PNG</label>
@@ -77,7 +77,7 @@
             <label class="control-label" for="proxy">Proxy</label>
         </div>
         <div class="controls">
-            <input  class="input-xlarge" type="text" id="proxy" name="proxy" value="[% proxy %]"/>
+            <input  class="input-xlarge" type="text" id="proxy" name="proxy" value="[% proxy | html %]"/>
         </div>
     </div>
 
@@ -87,7 +87,7 @@
             <label class="control-label" for="xpath">XPath</label>
         </div>
         <div class="controls">
-            <input class="input-xlarge" type="text" id="xpath" name="xpath" value="[% xpath %]" placeholder="Xpath expression"/>
+            <input class="input-xlarge" type="text" id="xpath" name="xpath" value="[% xpath | html %]" placeholder="Xpath expression"/>
         </div>
     </div>
 
