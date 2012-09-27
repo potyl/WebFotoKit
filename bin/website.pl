@@ -28,33 +28,45 @@ $dbh->do(qq{
     );
 });
 
-get '/' => sub {
 
-    my $url = param('url') // '';
-    my $id = param('id') // 0;
-    my $size = param('size') // '1280x800';
-    my $proxy = param('proxy') // '';
-    my $xpath = param('xpath') // '';
-    my $type = param('type') // 'png';
+sub get_queue_item_params {
+    my %queue_item = (
+        url   => param('url')   // '',
+        size  => param('size')  // '1280x800',
+        proxy => param('proxy') // '',
+        xpath => param('xpath') // '',
+        type  => param('type')  // 'png',
+    );
+ 
+    foreach my $value (values %queue_item) {
+        $value = trim($value);
+    }
 
+    return \%queue_item;
+}
+
+
+sub get_queue {
     my $select = $dbh->prepare("SELECT * FROM queue");
     $select->execute();
 
-    my @rows;
+    my @queue;
     while (my $row = $select->fetchrow_hashref) {
-        my $status_text = $row->{status};
-
-        push @rows, $row;
+        push @queue, $row;
     }
 
+    return @queue;
+}
+
+
+get '/' => sub {
+    my $id    = param('id') // 0;
+
+    my @queue = get_queue();
     my $data = {
-        rows  => \@rows,
-        url   => $url,
-        id    => $id,
-        type  => $type,
-        size  => $size,
-        proxy => $proxy,
-        xpath => $xpath,
+        id         => $id,
+        queue      => \@queue,
+        queue_item => get_queue_item_params(),
     };
 
     return template 'index.html', $data;
@@ -62,14 +74,13 @@ get '/' => sub {
 
 
 get '/add' => sub {
-    my $url = param('url') or return do_error("Missing parameter 'url'");
-    my $size = param('size') // '';
-    my $type = param('type') // 'png';
-    my $proxy = param('proxy') // '';
-    my $xpath = param('xpath') // '';
-
-    foreach my $val ($url, $size, $type, $proxy, $xpath) {
-        $val = trim($val);
+    my $data = {};
+    my $queue_item = get_queue_item_params();
+    if (! $queue_item->{url}) {
+        $data->{queue_item} = $queue_item;
+        $data->{queue} = [ get_queue() ];
+        $queue_item->{url_error} = "Field can't be empty";
+        return do_error('index.html', undef, $data);
     }
 
     $dbh->begin_work();
@@ -79,7 +90,7 @@ get '/add' => sub {
         $dbh->do(
             "INSERT INTO queue (url, size, type, proxy, xpath) VALUES (?, ?, ?, ?, ?)",
             undef,
-            $url, $size, $type, $proxy, $xpath,
+            @$queue_item{ qw(url size type proxy xpath) },
         );
         $id = $dbh->sqlite_last_insert_rowid();
         $dbh->commit();
@@ -88,7 +99,8 @@ get '/add' => sub {
         my $error = $@ || "Internal error";
         warn "Error: $error";
         $dbh->rollback();
-        return send_error "Server error";
+        $data->{queue} = [ get_queue() ];
+        return do_error('index.html', html("Error: $error"), $data);
     };
 
     return redirect "/?id=$id";
@@ -96,7 +108,9 @@ get '/add' => sub {
 
 
 get '/delete' => sub {
-    my $id = param('id') or return do_error("Missing parameter 'id'");
+    debug "in delete";
+    my $id = param('id') or return do_error("index.html", "Invalid parameter <code>id</code>");
+    debug "doing delete...";
 
     $dbh->begin_work();
 
@@ -108,7 +122,7 @@ get '/delete' => sub {
         my $error = $@ || "Internal error";
         warn "Error: $error";
         $dbh->rollback();
-        return send_error "Server error";
+        return do_error("index.html", html("Error: $error"));
     };
 
     return redirect "/";
@@ -120,7 +134,7 @@ my %MIME_TYPES = (
     png => 'image/png',
 );
 get '/view' => sub {
-    my $id = param('id') or return do_error("Missing parameter 'id'");
+    my $id = param('id') or return do_error("index.html", "Missing parameter <code>id</code>");
  
     my $select = $dbh->prepare("SELECT type FROM queue WHERE id = ? LIMIT 1");
     $select->execute($id);
@@ -129,24 +143,22 @@ get '/view' => sub {
         my $file = "captures/$id.$type";
         my $mime_type = $MIME_TYPES{$type};
         debug "Showing $file ($mime_type)";
-        return do_error("Can't find the file $file") unless -e $file;
+        return do_error("index.html", "Can't find the file <code>" . html($file) . "</code>") unless -e $file;
         return send_file $file, content_type => $mime_type, system_path => 1;
     }
 
-    return do_error("Can't find screenshot with id: $id");
+    return do_error("index.html", html("Can't find screenshot with id: $id"));
 };
 
 
 sub do_error {
-    my ($message) = @_;
-    return qq{
-        <html>
-        <body>
-        <h1>Error</h1>
-        <p>$message</p>
-        </body>
-        </html>
-    };
+    my ($template, $error_html, $data) = @_;
+    
+    $data ||= {};
+    $data->{error_html} = $error_html;
+    $data->{queue} ||= [ get_queue() ];
+
+    return template $template, $data;
 }
 
 
@@ -157,5 +169,13 @@ sub trim {
     return $string;
 }
 
+
+sub html {
+    my ($string) = @_;
+    $string =~ s/&/&amp;/g;
+    $string =~ s/</&lt;/g;
+    $string =~ s/>/&gt;/g;
+    return $string;
+}
 
 dance();
