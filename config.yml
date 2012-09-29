@@ -7,7 +7,6 @@ engines:
         start_tag: '[%'
         stop_tag: '%]'
         extension: 'html'
-#        INCLUDE_PATH: 'templates'
+        WRAPPER: template.html
 
 public: 'static'
-#views: templates
