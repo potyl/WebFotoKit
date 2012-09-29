@@ -133,6 +133,10 @@ get '/delete' => sub {
 };
 
 
+get '/about.html' => sub {
+    return template 'about.html';
+};
+
 my %MIME_TYPES = (
     pdf => 'application/pdf',
     png => 'image/png',
