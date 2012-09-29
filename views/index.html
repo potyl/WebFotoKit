@@ -12,7 +12,7 @@
     <div class="alert alert-error">[% error_html %]</div>
     [% END %]
 
-    [% IF queue %]
+    [% IF queue.size > 0 %]
         <legend>Urls to download</legend>
         <table class="table table-bordered table-striped">
         <tr>
