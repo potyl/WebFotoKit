@@ -114,7 +114,9 @@ get '/delete' => sub {
 
     $dbh->begin_work();
 
+    my $item;
     eval {
+        $item = fetch_queue_item($id);
         $dbh->do("DELETE FROM queue WHERE id = ?", undef, $id);
         $dbh->commit();
         1;
@@ -125,6 +127,8 @@ get '/delete' => sub {
         return do_error("index.html", html("Error: $error"));
     };
 
+    unlink $item->{file} if $item and defined $item->{file};
+
     return redirect "/";
 };
 
@@ -133,21 +137,34 @@ my %MIME_TYPES = (
     pdf => 'application/pdf',
     png => 'image/png',
 );
-get '/view' => sub {
-    my $id = param('id') or return do_error("index.html", "Missing parameter <code>id</code>");
- 
+sub fetch_queue_item {
+    my ($id) = @_;
+
     my $select = $dbh->prepare("SELECT type FROM queue WHERE id = ? LIMIT 1");
     $select->execute($id);
     while (my $row = $select->fetchrow_hashref) {
         my $type = $row->{type} || 'png';
-        my $file = "captures/$id.$type";
-        my $mime_type = $MIME_TYPES{$type};
-        debug "Showing $file ($mime_type)";
-        return do_error("index.html", "Can't find the file <code>" . html($file) . "</code>") unless -e $file;
-        return send_file $file, content_type => $mime_type, system_path => 1;
+        $row->{file} = "captures/$id.$type";
+        $row->{mime_type} = $MIME_TYPES{$type};
+        return $row;
     }
 
-    return do_error("index.html", html("Can't find screenshot with id: $id"));
+    return undef;
+}
+
+
+get '/view' => sub {
+    my $id = param('id') or return do_error("index.html", "Missing parameter <code>id</code>");
+    my $item = fetch_queue_item($id) or do_error("index.html", html("Can't find screenshot with id: $id"));
+
+    my $file = $item->{file};
+    my $mime_type = $item->{mime_type};
+    debug "Showing $file ($mime_type)";
+
+    if (-e $file) {
+        return send_file $file, content_type => $mime_type, system_path => 1;
+    }
+    return do_error("index.html", "Can't find the file <code>" . html($file) . "</code>") unless -e $file;
 };
 
 
