@@ -7,15 +7,17 @@ use Data::Dumper;
 use Dancer;
 use DBI;
 use FindBin;
-use File::Spec::Functions qw(catdir);
+use File::Spec::Functions qw(catdir catfile);
 use Cwd 'abs_path';
 
 my $APP_DIR = abs_path(catdir($FindBin::Bin, '..'));
 set appdir => $APP_DIR;
 chdir $APP_DIR;
 
+my $CONF = config->{app};
 
-my $dbh = DBI->connect('dbi:SQLite:dbname=queue.db', '', '');
+
+my $dbh = DBI->connect($CONF->{dbi}{dsn}, $CONF->{dbi}{login}, $CONF->{dbi}{password});
 $dbh->do(qq{
     CREATE TABLE IF NOT EXISTS queue (
         id     INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,11 +33,11 @@ $dbh->do(qq{
 
 sub get_queue_item_params {
     my %queue_item = (
-        url   => param('url')   // '',
-        size  => param('size')  // '1280x800',
-        proxy => param('proxy') // '',
-        xpath => param('xpath') // '',
-        type  => param('type')  // 'png',
+        url   => param('url')   || $CONF->{screenshot}{url},
+        size  => param('size')  || $CONF->{screenshot}{size},
+        proxy => param('proxy') // $CONF->{screenshot}{proxy},
+        xpath => param('xpath') // $CONF->{screenshot}{xpath},
+        type  => param('type')  || $CONF->{screenshot}{type},
     );
  
     foreach my $value (values %queue_item) {
@@ -148,7 +150,7 @@ sub fetch_queue_item {
     $select->execute($id);
     while (my $row = $select->fetchrow_hashref) {
         my $type = $row->{type} || 'png';
-        $row->{file} = "captures/$id.$type";
+        $row->{file} = catfile($CONF->{screenshot}{folder}, "$id.$type");
         $row->{mime_type} = $MIME_TYPES{$type};
         return $row;
     }

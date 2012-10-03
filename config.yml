@@ -7,6 +7,19 @@ engines:
         start_tag: '[%'
         stop_tag: '%]'
         extension: 'html'
-        WRAPPER: template.html
+        WRAPPER: 'template.html'
 
 public: 'static'
+
+app:
+    screenshot:
+        folder: 'captures'
+        url:   ''
+        proxy: ''
+        size:  '1280x800'
+        type:  'png'
+        xpath: ''
+    dbi:
+        dsn: 'dbi:SQLite:dbname=queue.db'
+        login: ''
+        password: ''

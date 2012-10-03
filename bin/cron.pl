@@ -7,14 +7,17 @@ use warnings;
 use Data::Dumper;
 use DBI;
 use FindBin;
-use File::Spec::Functions qw(catdir);
+use File::Spec::Functions qw(catdir catfile);
 use Cwd 'abs_path';
+use YAML 'LoadFile';
 
 my $APP_DIR = abs_path(catdir($FindBin::Bin, '..'));
 
 sub main {
     chdir $APP_DIR;
-    my $dbh = DBI->connect('dbi:SQLite:dbname=queue.db', '', '');
+    my $conf = LoadFile('config.yml')->{app};
+
+    my $dbh = DBI->connect($conf->{dbi}{dsn}, $conf->{dbi}{login}, $conf->{dbi}{password});
 
     my $update = $dbh->prepare("UPDATE queue SET status = ? WHERE id = ?");
 
@@ -32,9 +35,10 @@ sub main {
 
         print "Capturing $url as $id.png\n";
 
+        my $file = catfile($conf->{screenshot}{folder}, "$id.$row->{type}");
         my @command = (
             'bin/screenshot.pl', $url,
-            '--output', "captures/$id.$row->{type}",
+            '--output', $file,
         );
         foreach my $field ( qw(size type proxy xpath pause) ) {
             my $value = $row->{$field};
